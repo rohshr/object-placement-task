@@ -5,18 +5,20 @@ export interface DraggableObjectOptions {
   x: number;
   y: number;
   scale?: number;
-  onDragStart?: (obj: Container) => void;
-  onDragMove?: (obj: Container) => void;
-  onDragEnd?: (obj: Container) => void;
+  correctTargetId: number;
+  onDragStart?: (obj: DraggableObject) => void;
+  onDragMove?: (obj: DraggableObject) => void;
+  onDragEnd?: (obj: DraggableObject) => void;
 }
 
 export class DraggableObject extends Container {
   private sprite: Sprite;
   private isDragging = false;
   private dragOffset = { x: 0, y: 0 };
-  private onDragStartCallback?: (obj: Container) => void;
-  private onDragMoveCallback?: (obj: Container) => void;
-  private onDragEndCallback?: (obj: Container) => void;
+  private onDragStartCallback?: (obj: DraggableObject) => void;
+  private onDragMoveCallback?: (obj: DraggableObject) => void;
+  private onDragEndCallback?: (obj: DraggableObject) => void;
+  public correctTargetId: number;
 
   constructor(sprite: Sprite, options: DraggableObjectOptions) {
     super();
@@ -32,6 +34,8 @@ export class DraggableObject extends Container {
     this.onDragStartCallback = options.onDragStart;
     this.onDragMoveCallback = options.onDragMove;
     this.onDragEndCallback = options.onDragEnd;
+
+    this.correctTargetId = options.correctTargetId;
     
     this.setupInteractivity();
   }
