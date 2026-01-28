@@ -1,4 +1,4 @@
-import { Container, Graphics } from 'pixi.js';
+import { Container, Graphics } from "pixi.js";
 
 export interface TargetAreaOptions {
   id: number;
@@ -24,27 +24,27 @@ export class TargetArea extends Container {
     this.id = options.id;
     this.areaSize = options.size ?? 110;
     const borderWidth = options.borderWidth ?? 7;
-    const borderColor = options.borderColor ?? 0xFFD700; // Yellow
-    const fillColor = options.fillColor ?? 0xFFFFFF;
+    const borderColor = options.borderColor ?? 0xffd700; // Yellow
+    const fillColor = options.fillColor ?? 0xffffff;
     const fillAlpha = options.fillAlpha ?? 0.1;
 
     this.graphics = new Graphics();
-    
+
     // Draw filled rectangle
     this.graphics.rect(
       -this.areaSize / 2,
       -this.areaSize / 2,
       this.areaSize,
-      this.areaSize
+      this.areaSize,
     );
     this.graphics.fill({ color: fillColor, alpha: fillAlpha });
-    
+
     // Draw border
     this.graphics.rect(
       -this.areaSize / 2,
       -this.areaSize / 2,
       this.areaSize,
-      this.areaSize
+      this.areaSize,
     );
     this.graphics.stroke({ color: borderColor, width: borderWidth });
 
@@ -78,7 +78,7 @@ export class TargetArea extends Container {
   public isOverlapping(obj: Container): boolean {
     const objBounds = obj.getBounds();
     const targetBounds = this.getBounds();
-    
+
     return !(
       objBounds.x > targetBounds.x + targetBounds.width ||
       objBounds.x + objBounds.width < targetBounds.x ||
@@ -109,9 +109,9 @@ export class TargetArea extends Container {
    */
   public setHighlight(highlighted: boolean): void {
     this.graphics.clear();
-    
+
     const borderWidth = highlighted ? 7 : 7;
-    const borderColor = highlighted ? 0xFFA500 : 0xFFD700; // Orange when highlighted
+    const borderColor = highlighted ? 0xffa500 : 0xffd700; // Orange when highlighted
     const fillAlpha = highlighted ? 0.3 : 0.1;
 
     // Draw filled rectangle
@@ -119,16 +119,16 @@ export class TargetArea extends Container {
       -this.areaSize / 2,
       -this.areaSize / 2,
       this.areaSize,
-      this.areaSize
+      this.areaSize,
     );
-    this.graphics.fill({ color: 0xFFFFFF, alpha: fillAlpha });
-    
+    this.graphics.fill({ color: 0xffffff, alpha: fillAlpha });
+
     // Draw border
     this.graphics.rect(
       -this.areaSize / 2,
       -this.areaSize / 2,
       this.areaSize,
-      this.areaSize
+      this.areaSize,
     );
     this.graphics.stroke({ color: borderColor, width: borderWidth });
   }
@@ -140,7 +140,7 @@ export class TargetArea extends Container {
       -this.areaSize / 2,
       -this.areaSize / 2,
       this.areaSize,
-      this.areaSize
+      this.areaSize,
     );
     this.zIndex = 1;
     this.graphics.fill({ color: color, alpha: 0.5 });
