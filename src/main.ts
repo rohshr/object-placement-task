@@ -9,6 +9,52 @@ import {
 import { DraggableObject } from "./ui/DraggableObject";
 import { TargetArea } from "./ui/TargetArea";
 
+async function sendGameData(participantId: string, studyResults: any) {
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  const payload = {
+    participant_id: participantId,
+    data: studyResults,
+  };
+
+  isSavingData = true;
+  console.log("Saving data...");
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json();
+
+    if (response.ok) {
+      document.getElementById("success-message")!.style.display = "flex";
+      console.log("S3 Upload Success:", result);
+    } else {
+      throw new Error("Server responded with an error");
+    }
+  } catch (error) {
+    alert(
+      "Error saving data. Please do not close this tab and contact the researcher.",
+    );
+    console.error("Upload failed:", error);
+  } finally {
+    isSavingData = false;
+  }
+}
+
+let isSavingData = false;
+
+window.addEventListener("beforeunload", (event) => {
+  if (isSavingData) {
+    event.preventDefault();
+  }
+});
+
 (async () => {
   // Load font before use
   await Assets.load({
@@ -65,7 +111,9 @@ import { TargetArea } from "./ui/TargetArea";
 
   participantIdContainer.appendChild(idLabel);
   participantIdContainer.appendChild(idInput);
-  document.getElementById("pixi-container")!.appendChild(participantIdContainer);
+  document
+    .getElementById("pixi-container")!
+    .appendChild(participantIdContainer);
 
   let participantId = "";
   idInput.addEventListener("change", (e) => {
@@ -260,27 +308,44 @@ import { TargetArea } from "./ui/TargetArea";
   submitButton.visible = false;
 
   submitButton.on("pointerdown", () => {
+    if (!participantId) {
+      alert("Please enter the Participant ID before submitting.");
+      return;
+    }
+
     // Calculate and log results
     let correctCount = 0;
+    const objectResults: { [key: string]: 0 | 1 } = {};
     targetAreas.forEach((area) => {
-      if (
-        area.occupiedBy &&
-        (area.occupiedBy as DraggableObject).correctTargetId === area.id
-      ) {
+      const placedObject = area.occupiedBy as DraggableObject | null;
+      if (placedObject && placedObject.correctTargetId === area.id) {
+        objectResults[placedObject.objectName!] = 1;
         correctCount++;
         area.setCorrectness(true);
-      } else if (area.occupiedBy) {
+      } else if (placedObject) {
+        objectResults[placedObject.objectName!] = 0;
         area.setCorrectness(false);
       }
     });
+
+    const allCollectedData = {
+      participant_id: participantId,
+      objects: objectResults,
+      total_correct: correctCount,
+      total_objects: draggableAssets.length,
+    };
+
     console.log("Submitted!");
     console.log("Participant ID:", participantId);
     console.log(`Score: ${correctCount} / ${draggableAssets.length}`);
+    console.log("All data:", allCollectedData);
 
     // Update instruction text with score
     instructions.text = `You got ${correctCount} out of ${draggableAssets.length} correct.`;
     instructions.style = { fontWeight: "600" };
     submitButton.visible = false;
+
+    sendGameData(participantId, allCollectedData);
   });
 
   // Function to check if all objects are snapped

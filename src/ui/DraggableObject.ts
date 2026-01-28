@@ -19,6 +19,7 @@ export class DraggableObject extends Container {
   private onDragMoveCallback?: (obj: DraggableObject) => void;
   private onDragEndCallback?: (obj: DraggableObject) => void;
   public correctTargetId: number;
+  public objectName?: string;
 
   constructor(sprite: Sprite, options: DraggableObjectOptions) {
     super();
@@ -36,6 +37,9 @@ export class DraggableObject extends Container {
     this.onDragEndCallback = options.onDragEnd;
 
     this.correctTargetId = options.correctTargetId;
+    this.objectName = options.imagePath
+      .replace(/^.*[\\\/]/, "")
+      .replace(".png", ""); // Extract filename from path
 
     this.setupInteractivity();
   }
