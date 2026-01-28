@@ -30,6 +30,48 @@ import { TargetArea } from "./ui/TargetArea";
 
   // Append the application canvas to the document body
   document.getElementById("pixi-container")!.appendChild(app.canvas);
+  // Create participant ID input
+  const participantIdContainer = document.createElement("div");
+  participantIdContainer.style.cssText = `
+    position: absolute;
+    top: 24px;
+    left: 56px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-family: Inter, sans-serif;
+  `;
+
+  const idLabel = document.createElement("label");
+  idLabel.textContent = "Participant ID: ";
+  idLabel.style.cssText = `
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-right: 8px;
+  `;
+
+  const idInput = document.createElement("input");
+  idInput.type = "text";
+  idInput.placeholder = "Enter ID";
+  idInput.style.cssText = `
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: Inter, sans-serif;
+  `;
+
+  participantIdContainer.appendChild(idLabel);
+  participantIdContainer.appendChild(idInput);
+  document.getElementById("pixi-container")!.appendChild(participantIdContainer);
+
+  let participantId = "";
+  idInput.addEventListener("change", (e) => {
+    participantId = (e.target as HTMLInputElement).value;
+    console.log("Participant ID set to:", participantId);
+  });
 
   // Text elements
   const instructions = new Text({
@@ -45,7 +87,7 @@ import { TargetArea } from "./ui/TargetArea";
   });
 
   instructions.anchor.set(0);
-  instructions.position.set(56, 56);
+  instructions.position.set(56, 100);
 
   // Load textures
   const mapTexture = await Assets.load("/assets/map.png");
@@ -144,7 +186,7 @@ import { TargetArea } from "./ui/TargetArea";
   const objectGapX = Math.min(app.screen.width, app.screen.height) * 0.16;
   const objectGapY = objectGapX;
   const objectStartX = 280;
-  const objectStartY = instructions.height + 150;
+  const objectStartY = instructions.height + 180;
 
   const draggableObjects = await Promise.all(
     draggableAssets.map(async (asset, index) =>
@@ -218,7 +260,6 @@ import { TargetArea } from "./ui/TargetArea";
   submitButton.visible = false;
 
   submitButton.on("pointerdown", () => {
-    console.log("Submitted!");
     // Calculate and log results
     let correctCount = 0;
     targetAreas.forEach((area) => {
@@ -232,6 +273,8 @@ import { TargetArea } from "./ui/TargetArea";
         area.setCorrectness(false);
       }
     });
+    console.log("Submitted!");
+    console.log("Participant ID:", participantId);
     console.log(`Score: ${correctCount} / ${draggableAssets.length}`);
 
     // Update instruction text with score
