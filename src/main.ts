@@ -75,8 +75,36 @@ window.addEventListener("beforeunload", (event) => {
   // Create a new application
   const app = new Application();
 
+  const DESIGN_WIDTH = 1920;
+  const DESIGN_HEIGHT = 1080;
+
   // Initialize the application
-  await app.init({ background: "#dadada", resizeTo: window });
+  await app.init({ 
+    background: "#dadada", 
+    width: DESIGN_WIDTH,
+    height: DESIGN_HEIGHT,
+  });
+
+  // Scale canvas to fit window while maintaining aspect ratio
+  function resizeCanvas() {
+    const windowAspect = window.innerWidth / window.innerHeight;
+    const designAspect = DESIGN_WIDTH / DESIGN_HEIGHT;
+    
+    let scale;
+    if (windowAspect > designAspect) {
+      // Window is wider - fit to height
+      scale = window.innerHeight / DESIGN_HEIGHT;
+    } else {
+      // Window is taller - fit to width
+      scale = window.innerWidth / DESIGN_WIDTH;
+    }
+    
+    app.canvas.style.width = `${DESIGN_WIDTH * scale}px`;
+    app.canvas.style.height = `${DESIGN_HEIGHT * scale}px`;
+  }
+
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
 
   // Enable global pointer events on the stage
   app.stage.eventMode = "static";
