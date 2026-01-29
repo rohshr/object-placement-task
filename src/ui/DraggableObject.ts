@@ -37,9 +37,7 @@ export class DraggableObject extends Container {
     this.onDragEndCallback = options.onDragEnd;
 
     this.correctTargetId = options.correctTargetId;
-    this.objectName = options.imagePath
-      .replace(/^.*[\\\/]/, "")
-      .replace(".png", ""); // Extract filename from path
+    this.objectName = options.imagePath.split("/").pop()?.replace(".png", "");
 
     this.setupInteractivity();
   }

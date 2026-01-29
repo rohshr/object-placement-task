@@ -9,7 +9,15 @@ import {
 import { DraggableObject } from "./ui/DraggableObject";
 import { TargetArea } from "./ui/TargetArea";
 
-async function sendGameData(participantId: string, studyResults: any) {
+async function sendGameData(
+  participantId: string,
+  studyResults: {
+    participant_id: string;
+    objects: { [key: string]: 0 | 1 };
+    total_correct: number;
+    total_objects: number;
+  }
+) {
   const API_URL = import.meta.env.VITE_API_URL;
 
   const payload = {
